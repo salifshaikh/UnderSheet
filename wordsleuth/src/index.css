@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { @apply bg-night text-[#f3efff] font-sans min-h-screen; }
+@layer components {
+  .btn { @apply rounded-2xl bg-amber px-5 py-3 font-extrabold text-night transition active:scale-95 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint; }
+  .btn-ghost { @apply rounded-2xl border border-line bg-transparent px-5 py-3 font-semibold text-[#f3efff] transition active:scale-95 hover:bg-surf focus-visible:outline focus-visible:outline-2 focus-visible:outline-mint; }
+  .card { @apply rounded-3xl border border-line bg-surf p-5; }
+  .input { @apply w-full rounded-2xl border border-line bg-night px-4 py-3 text-lg outline-none focus:border-mint; }
+}
