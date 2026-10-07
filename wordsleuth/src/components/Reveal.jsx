@@ -11,6 +11,7 @@ export default function Reveal({ g, wordOf, setPlayers, onRepick, onStart }) {
   const p = g.players.find((x) => x.id === open)
   const word = p ? wordOf(p) : null
 
+  const pickCard = (x) => { setOpen(x.id); if (x.pre) { setName(x.name); setShown(true) } }
   const show = () => {
     const t = name.trim()
     if (!t) return setErr('Enter your name first.')
@@ -18,20 +19,20 @@ export default function Reveal({ g, wordOf, setPlayers, onRepick, onStart }) {
     setErr(''); setShown(true)
   }
   const hide = () => {
-    setPlayers(g.players.map((x) => (x.id === open ? { ...x, name: name.trim(), taken: true } : x)))
+    setPlayers(g.players.map((x) => (x.id === open ? { ...x, name: x.pre ? x.name : name.trim(), taken: true } : x)))
     setOpen(null); setName(''); setShown(false); setPass(left > 1)
   }
 
   return (
     <div className="mx-auto max-w-3xl p-5 pt-8">
       <h2 className="text-3xl font-extrabold">Pick a card</h2>
-      <p className="mb-5 text-[#a99fd6]">{left > 0 ? `${left} card${left > 1 ? 's' : ''} left. Tap one, add your name, read your word in private.` : 'Everyone has a word.'}</p>
+      <p className="mb-5 text-[#a99fd6]">{left > 0 ? `${left} card${left > 1 ? 's' : ''} left. Tap your card, read your word in private.` : 'Everyone has a word.'}</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
         {g.players.map((x) => (
           <motion.button key={x.id} disabled={x.taken} whileTap={{ scale: 0.94 }} whileHover={{ y: -4 }}
-            onClick={() => setOpen(x.id)}
+            onClick={() => pickCard(x)}
             className={`flex aspect-[3/4] items-center justify-center rounded-3xl border text-center text-xl font-extrabold ${x.taken ? 'border-line bg-night text-[#a99fd6]' : 'border-amber bg-surf text-5xl text-amber'}`}>
-            {x.taken ? <span className="px-2 text-base">✓ {x.name}</span> : '?'}
+            {x.taken ? <span className="px-2 text-base">✓ {x.name}</span> : x.pre ? <span className="px-2 text-2xl">{x.name}</span> : '?'}
           </motion.button>
         ))}
       </div>

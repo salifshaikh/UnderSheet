@@ -8,7 +8,7 @@ const norm = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')
 export default function Round({ g, onSpoke, onVote, onContinue }) {
   const [voting, setVoting] = useState(false)
   const [pick, setPick] = useState(null)
-  const [guess, setGuess] = useState('')
+  const [guesses, setGuesses] = useState({})
   const [res, setRes] = useState(null)
   const alive = g.players.filter((p) => p.alive)
   const civAlive = alive.filter((p) => p.role === 'c').length
@@ -16,8 +16,9 @@ export default function Round({ g, onSpoke, onVote, onContinue }) {
   const name = (id) => g.players.find((p) => p.id === id).name
   const out = g.out != null ? g.players.find((p) => p.id === g.out) : null
 
-  const submit = () => setRes(norm(guess) !== '' && norm(guess) === norm(g.civ) ? 'right' : 'wrong')
-  const done = (ok) => { setRes(null); setGuess(''); onContinue(ok) }
+  const mws = g.players.filter((p) => p.role === 'w' && (p.alive || p.id === g.out))
+  const submit = () => setRes({ ids: mws.filter((p) => norm(guesses[p.id] || '') !== '' && norm(guesses[p.id]) === norm(g.civ)).map((p) => p.id) })
+  const done = (ids) => { setRes(null); setGuesses({}); onContinue(ids) }
 
   return (
     <div className="mx-auto max-w-md space-y-5 p-5 pt-8">
@@ -62,14 +63,19 @@ export default function Round({ g, onSpoke, onVote, onContinue }) {
                   </motion.p>
                   {out.role === 'w' && !res && (
                     <>
-                      <p>All Mr Whites, agree on one guess for the civilian word.</p>
-                      <input className="input" value={guess} onChange={(e) => setGuess(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} placeholder="Your guess" />
-                      <button className="btn w-full" onClick={submit}>Submit guess</button>
+                      <p>Each Mr White writes their own guess for the civilian word.</p>
+                      {mws.map((p) => (
+                        <div key={p.id} className="text-left">
+                          <p className="text-sm text-[#a99fd6]">{p.name}</p>
+                          <input className="input" placeholder="Guess" value={guesses[p.id] || ''} onChange={(e) => setGuesses({ ...guesses, [p.id]: e.target.value })} />
+                        </div>
+                      ))}
+                      <button className="btn w-full" onClick={submit}>Submit guesses</button>
                     </>
                   )}
-                  {res === 'right' && <><p className="text-xl font-extrabold text-mint">Correct! The word was {g.civ}.</p><button className="btn w-full" onClick={() => done(true)}>See scores</button></>}
-                  {res === 'wrong' && <><p className="text-xl font-extrabold text-rose">Wrong guess.</p><button className="btn w-full" onClick={() => done(false)}>Continue</button></>}
-                  {out.role !== 'w' && <button className="btn w-full" onClick={() => done(false)}>Continue</button>}
+                  {res && res.ids.length > 0 && <><p className="text-xl font-extrabold text-mint">{res.ids.map(name).join(', ')} guessed it! The word was {g.civ}.</p><button className="btn w-full" onClick={() => done(res.ids)}>See scores</button></>}
+                  {res && res.ids.length === 0 && <><p className="text-xl font-extrabold text-rose">No correct guess.</p><button className="btn w-full" onClick={() => done([])}>Continue</button></>}
+                  {out.role !== 'w' && <button className="btn w-full" onClick={() => done([])}>Continue</button>}
                 </>
               ) : (
                 <>
