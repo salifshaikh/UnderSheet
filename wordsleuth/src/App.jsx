@@ -82,12 +82,25 @@ export default function App() {
   const delGroup = (id) => setS((x) => ({ ...x, gid: x.gid === id ? null : x.gid, groups: x.groups.filter((q) => q.id !== id) }))
   const clearScores = (id) => setS((x) => ({ ...x, totals: {}, groups: x.groups.map((q) => (q.id === id ? { ...q, totals: {} } : q)) }))
 
+  const goHome = () => {
+    if ((s.phase === 'reveal' || s.phase === 'play') && !confirm('Leave this game and go back to setup? This round will be lost.')) return
+    setS((x) => ({ ...x, phase: 'setup' }))
+  }
   const g = s.game
   const wordOf = (p) => (p.role === 'c' ? g.civ : p.role === 'i' ? g.imp : null)
   const grp = s.groups.find((q) => q.id === s.gid)
 
   return (
     <div className="flex min-h-screen flex-col">
+    {s.phase !== 'setup' && (
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-line bg-night/90 px-4 py-2 backdrop-blur">
+        <button className="btn-ghost flex items-center gap-2 !px-4 !py-2" onClick={goHome} aria-label="Home: change players and roles">
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" /></svg>
+          Home
+        </button>
+        <span className="font-extrabold text-amber">Word Sleuth</span>
+      </header>
+    )}
     <main className="flex-1">
       {s.phase === 'setup' && <Setup cfg={s.cfg} groups={s.groups} gid={s.gid} onStart={start} onDelete={delGroup} onClear={clearScores} />}
       {s.phase === 'reveal' && g && (
