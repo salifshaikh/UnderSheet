@@ -98,7 +98,10 @@ export default function App() {
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" /></svg>
           Home
         </button>
-        <span className="font-extrabold text-amber">Word Sleuth</span>
+        <div className="flex items-center gap-2">
+          <img src="/favicon.png" alt="Logo" className="h-7 w-7 rounded-md" />
+          <span className="font-extrabold text-amber">Word Sleuth</span>
+        </div>
       </header>
     )}
     <main className="flex-1">

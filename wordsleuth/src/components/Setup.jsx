@@ -37,7 +37,10 @@ export default function Setup({ cfg, groups, gid: g0, onStart, onDelete, onClear
 
   return (
     <div className="mx-auto max-w-md space-y-5 p-5 pt-10">
-      <h1 className="text-5xl font-extrabold tracking-tight">Word Sleuth</h1>
+      <div className="flex items-center gap-4">
+        <img src="/favicon.png" alt="Word Sleuth Logo" className="h-12 w-12 rounded-xl shadow-lg" />
+        <h1 className="text-5xl font-extrabold tracking-tight">Word Sleuth</h1>
+      </div>
       <p className="text-[#a99fd6]">Everyone gets a word. One of you got a different one and doesn't know it.</p>
 
       {groups.length > 0 && (
