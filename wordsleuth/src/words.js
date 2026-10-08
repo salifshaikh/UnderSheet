@@ -8,4 +8,7 @@ export const WORDS = [
   ['Bicycle','Scooter'],['Wolf','Dog'],['Sofa','Chair'],['Spoon','Fork'],['Hotel','Home'],
   ['Circus','Drama'],['Lemon','Orange'],['Pilot','Astronaut'],['Rose','Tulip'],['Plane','Rocket'],
   ['Flying Kiss','Hug'],['IronMan','Captain America'],['Youtube','Netflix'],['Thunder','Lightning'],['Samosa','Aloo Patties'],
+  ['Butterfly', 'Parrot'], ['Nail', 'Knife'], ['Police', 'Detective'], ['Fan', 'Spinner'], ['Swamp', 'Forest'], ['Carrom', 'Snooker'], 
+  ['Instagram', 'TikTok'], ['Coke', 'Fanta'], ['Towel', 'Napkin'], ['Onion', 'Garlic'], ['Dumbell', 'Push-ups'],  
+  ['Garden', 'Jungle'], ['Spotify', 'DJ'], 
 ]
