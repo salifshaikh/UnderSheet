@@ -4,6 +4,7 @@ import Setup from './components/Setup'
 import Reveal from './components/Reveal'
 import Round from './components/Round'
 import Over from './components/Over'
+import Footer from './components/Footer'
 
 const KEY = 'wordsleuth_v2'
 const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]] } return b }
@@ -24,14 +25,15 @@ function make(cfg, history, names) {
 }
 
 function check(g) {
-  const al = g.players.filter((p) => p.alive)
+  const al = g.players.filter((p) => p.alive) // only ALIVE players can ever score
   const cnt = (r) => al.filter((p) => p.role === r)
   const C = g.players.filter((p) => p.role === 'c').length
   const pts = (list, v) => Object.fromEntries(list.map((p) => [p.id, v]))
   if (!cnt('i').length && !cnt('w').length) return { winner: 'Civilians', points: pts(cnt('c'), 2) }
   if (cnt('c').length <= 2) {
-    // only imposters still alive get points; voted-out imposters get 0
-    return cnt('i').length ? { winner: 'Imposters', points: pts(cnt('i'), C) } : { winner: 'Mr White', points: pts(cnt('w'), C) }
+    const i = cnt('i'), w = cnt('w')
+    const winner = i.length && w.length ? 'Imposters & Mr White' : i.length ? 'Imposters' : 'Mr White'
+    return { winner, points: pts([...i, ...w], C) } // alive imposters AND alive Mr Whites
   }
   return null
 }
@@ -62,11 +64,11 @@ export default function App() {
     return { ...x, phase: 'over', game: { ...g, out: null, result }, totals,
       groups: x.groups.map((q) => (q.id === x.gid ? { ...q, totals, names, cfg: x.cfg } : q)) }
   })
-  const cont = (ids) => {
+  const cont = (ok) => {
     const g = s.game
-    if (ids && ids.length) { // only the Mr Whites who guessed right score
+    if (ok) { // all Mr Whites guessed the word together
       const C = g.players.filter((p) => p.role === 'c').length
-      return finish(g, { winner: 'Mr White', points: Object.fromEntries(ids.map((i) => [i, C])) })
+      return finish(g, { winner: 'Mr White', points: Object.fromEntries(g.players.filter((p) => p.role === 'w').map((p) => [p.id, C])) })
     }
     const r = check(g)
     if (r) finish(g, r)
@@ -85,7 +87,8 @@ export default function App() {
   const grp = s.groups.find((q) => q.id === s.gid)
 
   return (
-    <main className="min-h-screen">
+    <div className="flex min-h-screen flex-col">
+    <main className="flex-1">
       {s.phase === 'setup' && <Setup cfg={s.cfg} groups={s.groups} gid={s.gid} onStart={start} onDelete={delGroup} onClear={clearScores} />}
       {s.phase === 'reveal' && g && (
         <Reveal g={g} wordOf={wordOf} setPlayers={(players) => upd((g) => ({ ...g, players }))}
@@ -98,5 +101,7 @@ export default function App() {
       )}
       {s.phase === 'over' && g && <Over g={g} totals={s.totals} group={grp} onSave={saveGroup} onAgain={again} onSetup={() => setS((x) => ({ ...x, phase: 'setup' }))} />}
     </main>
+    <Footer />
+    </div>
   )
 }
